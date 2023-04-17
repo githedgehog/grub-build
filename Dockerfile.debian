@@ -1,0 +1,32 @@
+# only Debian 12 builds the latest versions of their grub
+FROM debian:bookworm
+
+# basics for building debian packages
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential fakeroot devscripts git git-buildpackage equivs apt-utils
+
+ADD grub-debian /src/grub
+WORKDIR /src/grub
+
+# add the NX patches
+# TODO: there is for sure a Debian way of doing this, but I don't have time for that right now
+# COPY 0255-nx-add-memory-attribute-get-set-API.patch /src/grub/debian/patches/
+# COPY 0256-nx-set-page-permissions-for-loaded-modules.patch /src/grub/debian/patches/
+# COPY 0257-nx-set-attrs-in-our-kernel-loaders.patch /src/grub/debian/patches/
+# COPY 0258-nx-set-the-nx-compatible-flag-in-EFI-grub-images.patch /src/grub/debian/patches/
+# RUN echo 0255-nx-add-memory-attribute-get-set-API.patch >> /src/grub/debian/patches/series && \
+#     echo 0256-nx-set-page-permissions-for-loaded-modules.patch >> /src/grub/debian/patches/series && \
+#     echo 0257-nx-set-attrs-in-our-kernel-loaders.patch >> /src/grub/debian/patches/series && \
+#     echo 0258-nx-set-the-nx-compatible-flag-in-EFI-grub-images.patch >> /src/grub/debian/patches/series
+
+COPY 0255-nx-add-memory-attribute-get-set-API.patch /src/
+COPY 0256-nx-set-page-permissions-for-loaded-modules.patch /src/
+COPY 0257-nx-set-attrs-in-our-kernel-loaders.patch /src/
+COPY 0258-nx-set-the-nx-compatible-flag-in-EFI-grub-images.patch /src/
+
+# install dependencies for building grub
+# RUN mk-build-deps -i -t "apt-get --no-install-recommends --yes"
+
+# this builds it
+# RUN DEB_BUILD_OPTIONS=nocheck debuild -b -uc -us
+
+# now build our EFI image
