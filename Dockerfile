@@ -49,7 +49,11 @@ WORKDIR /src/grub/grub-2.06/grub-x86_64-efi-2.06
 # 1. SONiC
 # we are adding the following things for the SONiC grub:
 # - the is_sb_enabled module which actually comes from ONIE for future scripting
-RUN ./grub-mkimage -O x86_64-efi -o /artifacts/sonic-grubx64.efi -d grub-core --sbat ./sbat.csv -m memdisk.squashfs -p /EFI/SONiC-OS \
+# - its embedded configuration
+ADD sonic-embedded-grub.cfg /sonic/
+RUN ./grub-mkimage \
+    -O x86_64-efi -o /artifacts/sonic-grubx64.efi -d grub-core --sbat ./sbat.csv -m memdisk.squashfs \
+    -p /EFI/SONiC-OS --config=/sonic/sonic-embedded-grub.cfg \
     is_sb_enabled version \
     all_video boot blscfg btrfs cat configfile cryptodisk echo ext2 f2fs fat font gcry_rijndael gcry_rsa gcry_serpent gcry_sha256 gcry_twofish gcry_whirlpool \
     gfxmenu gfxterm gzio halt hfsplus http increment iso9660 jpeg loadenv loopback linux lvm luks luks2 memdisk mdraid09 mdraid1x minicmd net normal \

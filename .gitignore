@@ -2,3 +2,4 @@
 /grub-fedora
 /build-x86_64.log
 /build-arm64.log
+/artifacts/**.efi
