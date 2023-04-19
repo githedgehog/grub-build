@@ -1,5 +1,5 @@
-# only Debian 12 builds the latest versions of their grub
-FROM fedora:37
+# if you adjust the fedora version here, adjust it below during the checkout as well
+FROM fedora:38
 
 # basics for building debian packages
 # we are adding pedump for checking the resulting EFI images
@@ -28,13 +28,16 @@ ADD grub-fedora /src/grub
 WORKDIR /src/grub
 
 # we will build from the fedora 37 tree for now
-RUN git checkout f37
+RUN git checkout f38
 
 # add all our adjustments now
 # adjusted SBAT file
 ADD sbat.csv.in /src/grub/
 
 # as well as our own grub patches
+# this one is to forbid loading of different device trees on arm platforms
+ADD no-devicetree-if-secure-boot.patch 9998-no-devicetree-if-secure-boot.patch
+RUN echo "Patch9998: 9998-no-devicetree-if-secure-boot.patch" >> grub.patches
 # this one is an adjusted patch from ONIE which adds the `is_sb_enabled` command
 # to test for secure boot availability in grub configs/scripts
 ADD is_sb_enabled_command.patch 9999-is_sb_enabled_command.patch

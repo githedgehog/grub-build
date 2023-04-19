@@ -17,29 +17,32 @@ Patch-Name: no-devicetree-if-secure-boot.patch
  2 files changed, 20 insertions(+)
 
 diff --git a/grub-core/loader/arm/linux.c b/grub-core/loader/arm/linux.c
-index 51684914c..092e8e307 100644
+index ed23dc7..3a32f76 100644
 --- a/grub-core/loader/arm/linux.c
 +++ b/grub-core/loader/arm/linux.c
-@@ -30,6 +30,10 @@
+@@ -30,6 +30,12 @@
  #include <grub/linux.h>
  #include <grub/verify.h>
  
 +#ifdef GRUB_MACHINE_EFI
 +#include <grub/efi/efi.h>
++/* mheese: this import is necessary to find GRUB_EFI_SECUREBOOT_MODE_ENABLED */
++#include <grub/efi/sb.h>
 +#endif
 +
  GRUB_MOD_LICENSE ("GPLv3+");
  
  static grub_dl_t my_mod;
-@@ -471,6 +475,14 @@ grub_cmd_devicetree (grub_command_t cmd __attribute__ ((unused)),
+@@ -471,6 +477,15 @@ grub_cmd_devicetree (grub_command_t cmd __attribute__ ((unused)),
    if (argc != 1)
      return grub_error (GRUB_ERR_BAD_ARGUMENT, N_("filename expected"));
  
 +#ifdef GRUB_MACHINE_EFI
-+  if (grub_efi_secure_boot ())
++  /* mheese: exchanging call to `grub_efi_secureboot()` with comparison call to `grub_efi_get_secureboot()` as grub_efi_secureboot is not exported any longer */
++  if (grub_efi_get_secureboot () == GRUB_EFI_SECUREBOOT_MODE_ENABLED)
 +    {
 +      return grub_error (GRUB_ERR_ACCESS_DENIED,
-+		  "Secure Boot forbids loading devicetree from %s", argv[0]);
++                 "Secure Boot forbids loading devicetree from %s", argv[0]);
 +    }
 +#endif
 +
@@ -47,18 +50,27 @@ index 51684914c..092e8e307 100644
    if (!dtb)
      return grub_errno;
 diff --git a/grub-core/loader/efi/fdt.c b/grub-core/loader/efi/fdt.c
-index ee9c5592c..f0c2d91be 100644
+index c572415..c32bf6b 100644
 --- a/grub-core/loader/efi/fdt.c
 +++ b/grub-core/loader/efi/fdt.c
-@@ -123,6 +123,14 @@ grub_cmd_devicetree (grub_command_t cmd __attribute__ ((unused)),
+@@ -25,6 +25,7 @@
+ #include <grub/efi/efi.h>
+ #include <grub/efi/fdtload.h>
+ #include <grub/efi/memory.h>
++#include <grub/efi/sb.h>
+ #include <grub/cpu/efi/memory.h>
+ 
+ GRUB_MOD_LICENSE ("GPLv3+");
+@@ -129,6 +130,15 @@ grub_cmd_devicetree (grub_command_t cmd __attribute__ ((unused)),
        return GRUB_ERR_NONE;
      }
  
 +#ifdef GRUB_MACHINE_EFI
-+  if (grub_efi_secure_boot ())
++  /* mheese: exchanging call to `grub_efi_secureboot()` with comparison call to `grub_efi_get_secureboot()` as grub_efi_secureboot is not exported any longer */
++  if (grub_efi_get_secureboot () == GRUB_EFI_SECUREBOOT_MODE_ENABLED)
 +    {
 +      return grub_error (GRUB_ERR_ACCESS_DENIED,
-+		  "Secure Boot forbids loading devicetree from %s", argv[0]);
++                 "Secure Boot forbids loading devicetree from %s", argv[0]);
 +    }
 +#endif
 +
