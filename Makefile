@@ -1,4 +1,5 @@
 MKFILE_DIR := $(shell echo $(dir $(abspath $(lastword $(MAKEFILE_LIST)))) | sed 's#/$$##')
+DOCKER_BUILDX_FLAGS ?=
 
 all: build
 
@@ -16,7 +17,7 @@ build:
 		-t ghcr.io/githedgehog/grub-build:latest \
 		--progress=plain \
 		--build-arg EFIARCH=x64 \
-		--platform=linux/amd64 . 2>&1 | tee build-x86_64.log
+		--platform=linux/amd64 $(DOCKER_BUILDX_FLAGS) . 2>&1 | tee build-x86_64.log
 	docker rm grub-build &>/dev/null | true
 	docker create --name grub-build ghcr.io/githedgehog/grub-build:latest
 	docker cp grub-build:/artifacts/onie-grubx64.efi $(MKFILE_DIR)/artifacts/
@@ -40,4 +41,5 @@ build-arm64:
 shell:
 	docker run -ti --rm --entrypoint=/bin/bash ghcr.io/githedgehog/grub-build:latest --login
 
+ci: DOCKER_BUILDX_FLAGS = --load
 ci: grub-fedora build
