@@ -52,14 +52,14 @@ RUN echo "Patch9999: 9999-is_sb_enabled_command.patch" >> grub.patches
 RUN make compile
 
 # create our grub artifacts from build
-WORKDIR /src/grub/grub-2.06/grub-x86_64-efi-2.06
+WORKDIR /src/grub/grub-2.06/grub-${TARGETARCH}-efi-2.06
 # 1. SONiC
 # we are adding the following things for the SONiC grub:
 # - the is_sb_enabled module which actually comes from ONIE for future scripting
 # - its embedded configuration
 ADD sonic-embedded-grub.cfg /sonic/
 RUN ./grub-mkimage \
-    -O x86_64-efi -o /artifacts/sonic-grub${EFIARCH}.efi -d grub-core --sbat ./sbat.csv -m memdisk.squashfs \
+    -O ${TARGETARCH}-efi -o /artifacts/sonic-grub${EFIARCH}.efi -d grub-core --sbat ./sbat.csv -m memdisk.squashfs \
     -p /EFI/SONiC-OS --config=/sonic/sonic-embedded-grub.cfg \
     is_sb_enabled version \
     all_video boot blscfg btrfs cat configfile cryptodisk echo ext2 f2fs fat font gcry_rijndael gcry_rsa gcry_serpent gcry_sha256 gcry_twofish gcry_whirlpool \
@@ -82,7 +82,7 @@ RUN echo "SBAT section of /artifacts/sonic-grub${EFIARCH}.efi:" && pedump --extr
 # TODO: the embedded configuration should have embedded what is in the config files, then there would be no need for signatures, and the contents must not change anyways
 ADD onie-embedded-grub.cfg ONIE-pubring.kbx /onie/
 RUN ./grub-mkimage \
-    -O x86_64-efi -o /artifacts/onie-grub${EFIARCH}.efi -d grub-core --sbat ./sbat.csv -m memdisk.squashfs \
+    -O ${TARGETARCH}-efi -o /artifacts/onie-grub${EFIARCH}.efi -d grub-core --sbat ./sbat.csv -m memdisk.squashfs \
     -p /bogus --pubkey /onie/ONIE-pubring.kbx --config=/onie/onie-embedded-grub.cfg \
     version \
     archelp bufio crypto efi_gop efi_uga fshelp gcry_dsa gcry_sha1 gcry_sha512 gettext gfxterm_background is_sb_enabled keystatus lsefisystab lssal raid5rec raid6rec terminal terminfo true zfs zfscrypt zfsinfo \
