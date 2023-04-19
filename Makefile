@@ -15,10 +15,25 @@ build:
 	docker buildx build \
 		-t ghcr.io/githedgehog/grub-build:latest \
 		--progress=plain \
+		--build-arg EFIARCH=x64 \
 		--platform=linux/amd64 . 2>&1 | tee build-x86_64.log
+	docker rm grub-build &>/dev/null | true
 	docker create --name grub-build ghcr.io/githedgehog/grub-build:latest
 	docker cp grub-build:/artifacts/onie-grubx64.efi $(MKFILE_DIR)/artifacts/
 	docker cp grub-build:/artifacts/sonic-grubx64.efi $(MKFILE_DIR)/artifacts/
+	docker rm grub-build
+
+.PHONY: build-arm64
+build-arm64:
+	docker buildx build \
+		-t ghcr.io/githedgehog/grub-build:latest \
+		--progress=plain \
+		--build-arg EFIARCH=aa64 \
+		--platform=linux/arm64 . 2>&1 | tee build-arm64.log
+	docker rm grub-build &>/dev/null | true
+	docker create --name grub-build ghcr.io/githedgehog/grub-build:latest
+	docker cp grub-build:/artifacts/onie-grubaa64.efi $(MKFILE_DIR)/artifacts/
+	docker cp grub-build:/artifacts/sonic-grubaa64.efi $(MKFILE_DIR)/artifacts/
 	docker rm grub-build
 
 .PHONY: shell

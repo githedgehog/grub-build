@@ -1,6 +1,10 @@
 # if you adjust the fedora version here, adjust it below during the checkout as well
 FROM fedora:38
 
+ARG TARGETARCH
+ARG BUILDARCH
+ARG EFIARCH=x64
+
 # basics for building debian packages
 # we are adding pedump for checking the resulting EFI images
 RUN dnf group install -y "C Development Tools and Libraries" "Development Tools"
@@ -55,7 +59,7 @@ WORKDIR /src/grub/grub-2.06/grub-x86_64-efi-2.06
 # - its embedded configuration
 ADD sonic-embedded-grub.cfg /sonic/
 RUN ./grub-mkimage \
-    -O x86_64-efi -o /artifacts/sonic-grubx64.efi -d grub-core --sbat ./sbat.csv -m memdisk.squashfs \
+    -O x86_64-efi -o /artifacts/sonic-grub${EFIARCH}.efi -d grub-core --sbat ./sbat.csv -m memdisk.squashfs \
     -p /EFI/SONiC-OS --config=/sonic/sonic-embedded-grub.cfg \
     is_sb_enabled version \
     all_video boot blscfg btrfs cat configfile cryptodisk echo ext2 f2fs fat font gcry_rijndael gcry_rsa gcry_serpent gcry_sha256 gcry_twofish gcry_whirlpool \
@@ -65,10 +69,10 @@ RUN ./grub-mkimage \
     usb usbserial_common usbserial_pl2303 usbserial_ftdi usbserial_usbdebug keylayouts at_keyboard
 
 # with this output we can verify that the NX compatibility flag is indeed set
-RUN pedump /artifacts/sonic-grubx64.efi
+RUN pedump /artifacts/sonic-grub${EFIARCH}.efi
 
 # with this output we can verify our SBAT section
-RUN echo "SBAT section of /artifacts/sonic-grubx64.efi:" && pedump --extract section:.sbat /artifacts/sonic-grubx64.efi
+RUN echo "SBAT section of /artifacts/sonic-grub${EFIARCH}.efi:" && pedump --extract section:.sbat /artifacts/sonic-grub${EFIARCH}.efi
 
 # 2. ONIE
 # we are adding the following things for the ONIE grub:
@@ -78,7 +82,7 @@ RUN echo "SBAT section of /artifacts/sonic-grubx64.efi:" && pedump --extract sec
 # TODO: the embedded configuration should have embedded what is in the config files, then there would be no need for signatures, and the contents must not change anyways
 ADD onie-embedded-grub.cfg ONIE-pubring.kbx /onie/
 RUN ./grub-mkimage \
-    -O x86_64-efi -o /artifacts/onie-grubx64.efi -d grub-core --sbat ./sbat.csv -m memdisk.squashfs \
+    -O x86_64-efi -o /artifacts/onie-grub${EFIARCH}.efi -d grub-core --sbat ./sbat.csv -m memdisk.squashfs \
     -p /bogus --pubkey /onie/ONIE-pubring.kbx --config=/onie/onie-embedded-grub.cfg \
     version \
     archelp bufio crypto efi_gop efi_uga fshelp gcry_dsa gcry_sha1 gcry_sha512 gettext gfxterm_background is_sb_enabled keystatus lsefisystab lssal raid5rec raid6rec terminal terminfo true zfs zfscrypt zfsinfo \
@@ -89,7 +93,7 @@ RUN ./grub-mkimage \
     usb usbserial_common usbserial_pl2303 usbserial_ftdi usbserial_usbdebug keylayouts at_keyboard
 
 # with this output we can verify that the NX compatibility flag is indeed set
-RUN pedump /artifacts/onie-grubx64.efi
+RUN pedump /artifacts/onie-grub${EFIARCH}.efi
 
 # with this output we can verify our SBAT section
-RUN echo "SBAT section of /artifacts/onie-grubx64.efi:" && pedump --extract section:.sbat /artifacts/onie-grubx64.efi
+RUN echo "SBAT section of /artifacts/onie-grub${EFIARCH}.efi:" && pedump --extract section:.sbat /artifacts/onie-grub${EFIARCH}.efi
