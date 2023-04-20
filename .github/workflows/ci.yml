@@ -66,7 +66,6 @@ jobs:
           sudo apt install -y ./libyubihsm1_2.4.0_amd64.deb
           sudo apt install -y ./libyubihsm-dev_2.4.0_amd64.deb
           sudo apt install -y ./libykhsmauth1_2.4.0_amd64.deb
-          sudo apt install -y ./libykhsmauth-dev_2.4.0_amd64.deb
           sudo apt install -y ./yubihsm-pkcs11_2.4.0_amd64.deb
           sudo apt install -y ./yubihsm-auth_2.4.0_amd64.deb
           sudo apt install -y ./yubihsm-shell_2.4.0_amd64.deb
