@@ -50,8 +50,8 @@ jobs:
           driver-opts: |
             env.BUILDKIT_STEP_LOG_MAX_SIZE=-1
             env.BUILDKIT_STEP_LOG_MAX_SPEED=-1
-      - name: Run grub build (make ci)
-        run: make ci
+      - name: Run grub build (make ci-arm64)
+        run: make ci-arm64
       - name: Upload onie-grubaa64.efi
         uses: actions/upload-artifact@v3
         with:
