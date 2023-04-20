@@ -55,16 +55,16 @@ jobs:
           sudo apt install -y libengine-pkcs11-openssl
 
           # install dependencies
-          sudo apt install -y libusb-1.0-0 libpcsclite1 libusb-1.0-0
+          sudo apt install -y libusb-1.0-0 libpcsclite1 libusb-1.0-0 libssl3
 
           # download the yubihsm-shell package, it is all we need, and install all debs
           wget https://developers.yubico.com/yubihsm-shell/Releases/yubihsm-shell-2.4.0-ubuntu2204-amd64.tar.gz
           tar xf yubihsm-shell-2.4.0-ubuntu2204-amd64.tar.gz
           cd yubihsm-shell
-          sudo apt install -y ./libyubihsm1_2.4.0_amd64.deb
-          sudo apt install -y ./libyubihsm-dev_2.4.0_amd64.deb
           sudo apt install -y ./libyubihsm-usb1_2.4.0_amd64.deb
           sudo apt install -y ./libyubihsm-http1_2.4.0_amd64.deb
+          sudo apt install -y ./libyubihsm1_2.4.0_amd64.deb
+          sudo apt install -y ./libyubihsm-dev_2.4.0_amd64.deb
           sudo apt install -y ./libykhsmauth1_2.4.0_amd64.deb
           sudo apt install -y ./libykhsmauth-dev_2.4.0_amd64.deb
           sudo apt install -y ./yubihsm-pkcs11_2.4.0_amd64.deb
