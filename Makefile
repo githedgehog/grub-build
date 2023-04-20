@@ -14,6 +14,7 @@ grub-fedora:
 .PHONY: build
 build:
 	docker buildx build \
+		-f Dockerfile \
 		-t ghcr.io/githedgehog/grub-build:latest \
 		--progress=plain \
 		--build-arg EFIARCH=x64 \
@@ -29,6 +30,7 @@ build:
 .PHONY: build-arm64
 build-arm64:
 	docker buildx build \
+		-f Dockerfile.arm64 \
 		-t ghcr.io/githedgehog/grub-build:latest \
 		--progress=plain \
 		--build-arg EFIARCH=aa64 \
@@ -47,3 +49,6 @@ shell:
 
 ci: DOCKER_BUILDX_FLAGS = --load
 ci: grub-fedora build
+
+ci-arm64: DOCKER_BUILDX_FLAGS = --load
+ci-arm64: grub-fedora build-arm64
