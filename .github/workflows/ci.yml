@@ -55,7 +55,7 @@ jobs:
           sudo apt install -y libengine-pkcs11-openssl
 
           # install dependencies
-          sudo apt install -y libusb-1.0-0 libpcsclite1 libusb-1.0-0 libssl
+          sudo apt install -y libusb-1.0-0 libpcsclite1 libusb-1.0-0
 
           # download the yubihsm-shell package, it is all we need, and install all debs
           wget https://developers.yubico.com/yubihsm-shell/Releases/yubihsm-shell-2.4.0-ubuntu2004-amd64.tar.gz
