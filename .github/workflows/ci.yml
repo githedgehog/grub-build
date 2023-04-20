@@ -63,7 +63,7 @@ jobs:
           name: sonic-grubaa64.efi
           path: artifacts/sonic-grubaa64.efi
   signing:
-    needs: build
+    needs: [build, build-arm64]
     runs-on: [self-hosted, dind]
     environment: hsm-test
     env:
@@ -145,17 +145,37 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: sonic-grubx64.efi
+      - name: Download onie-grubaa64.efi from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: onie-grubaa64.efi
+      - name: Download sonic-grubaa64.efi from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: sonic-grubaa64.efi
       - name: Sign all EFI grub binaries
         run: |
           sbsign --engine pkcs11 --cert sb-signing-cert.pem --key $PKCS11_KEY_URI onie-grubx64.efi
           sbsign --engine pkcs11 --cert sb-signing-cert.pem --key $PKCS11_KEY_URI sonic-grubx64.efi
+          sbsign --engine pkcs11 --cert sb-signing-cert.pem --key $PKCS11_KEY_URI onie-grubaa64.efi
+          sbsign --engine pkcs11 --cert sb-signing-cert.pem --key $PKCS11_KEY_URI sonic-grubaa64.efi
       - name: Upload onie-grubx64.efi.signed
         uses: actions/upload-artifact@v3
         with:
           name: onie-grubx64.efi.signed
           path: onie-grubx64.efi.signed
-      - name: Upload sonic-grubx64.efi
+      - name: Upload sonic-grubx64.efi.signed
         uses: actions/upload-artifact@v3
         with:
           name: sonic-grubx64.efi.signed
           path: sonic-grubx64.efi.signed
+      - name: Upload onie-grubaa64.efi.signed
+        uses: actions/upload-artifact@v3
+        with:
+          name: onie-grubaa64.efi.signed
+          path: onie-grubaa64.efi.signed
+      - name: Upload sonic-grubaa64.efi.signed
+        uses: actions/upload-artifact@v3
+        with:
+          name: sonic-grubaa64.efi.signed
+          path: sonic-grubaa64.efi.signed
