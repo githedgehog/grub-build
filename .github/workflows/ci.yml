@@ -54,11 +54,24 @@ jobs:
           # this is the PKCS11 engine module for OpenSSL
           sudo apt install -y libengine-pkcs11-openssl
 
+          # install dependencies
+          sudo apt install -y libusb-1.0-0 libpcsclite1 libusb-1.0-0
+
           # download the yubihsm-shell package, it is all we need, and install all debs
           wget https://developers.yubico.com/yubihsm-shell/Releases/yubihsm-shell-2.4.0-ubuntu2204-amd64.tar.gz
           tar xf yubihsm-shell-2.4.0-ubuntu2204-amd64.tar.gz
           cd yubihsm-shell
-          sudo dpkg -i *.deb
+          sudo apt install -y ./libyubihsm1_2.4.0_amd64.deb
+          sudo apt install -y ./libyubihsm-dev_2.4.0_amd64.deb
+          sudo apt install -y ./libyubihsm-usb1_2.4.0_amd64.deb
+          sudo apt install -y ./libyubihsm-http1_2.4.0_amd64.deb
+          sudo apt install -y ./libykhsmauth1_2.4.0_amd64.deb
+          sudo apt install -y ./libykhsmauth-dev_2.4.0_amd64.deb
+          sudo apt install -y ./yubihsm-pkcs11_2.4.0_amd64.deb
+          sudo apt install -y ./yubihsm-auth_2.4.0_amd64.deb
+          sudo apt install -y ./yubihsm-shell_2.4.0_amd64.deb
+          sudo apt install -y ./yubihsm-wrap_2.4.0_amd64.deb
+
           cd
       - name: Prepare HSM and PKCS11 configuration files
         run: |
