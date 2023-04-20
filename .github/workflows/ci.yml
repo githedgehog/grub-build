@@ -47,17 +47,17 @@ jobs:
     steps:
       - name: Install sbsign tool
         run: |
-          apt install -y sbsigntool
+          sudo apt install -y sbsigntool
       - name: Install YubiHSM client and PKC11 dependencies
         run: |
           # this is the PKCS11 engine module for OpenSSL
-          apt install -y libengine-pkcs11-openssl
+          sudo apt install -y libengine-pkcs11-openssl
 
           # download the yubihsm-shell package, it is all we need, and install all debs
           wget https://developers.yubico.com/yubihsm-shell/Releases/yubihsm-shell-2.4.0-ubuntu2204-amd64.tar.gz
           tar xf yubihsm-shell-2.4.0-ubuntu2204-amd64.tar.gz
           cd yubihsm-shell
-          apt install *.deb
+          sudo apt install *.deb
           cd
       - name: Prepare HSM and PKCS11 configuration files
         run: |
