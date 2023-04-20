@@ -5,7 +5,7 @@ ARG BUILDARCH
 # unfortunately TARGETARCH is useless, so we need to set our own as well
 ARG EFIARCH=x64
 ARG TARGETHOSTARCH=x86_64
-RUN echo "Building shim for \"${TARGETARCH}\" (\"${TARGETHOSTARCH}\"")on \"${BUILDARCH}\" (EFIARCH: \"${EFIARCH}\")"
+RUN echo "Building shim for \"${TARGETARCH}\" (\"${TARGETHOSTARCH}\") on \"${BUILDARCH}\" (EFIARCH: \"${EFIARCH}\")"
 
 # basics for building debian packages
 # we are adding pedump for checking the resulting EFI images
