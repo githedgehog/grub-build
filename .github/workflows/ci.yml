@@ -109,8 +109,7 @@ jobs:
           echo "${{ vars.SB_SIGNING_CERT }}" > sb-signing-cert.pem
       - name: Prepare PKCS11 Key URI
         run: |
-          tmp="${{ vars.PKCS11_KEY_URI }}"
-          eval PKCS11_KEY_URI=$tmp
+          PKCS11_KEY_URI=$( eval tmp="${{ vars.PKCS11_KEY_URI }}"; echo $tmp )
           echo "::add-mask::$PKCS11_KEY_URI" 
           echo "PKCS11_KEY_URI=$PKCS11_KEY_URI" >> $GITHUB_ENV
       - name: Download onie-grubx64.efi from build job
