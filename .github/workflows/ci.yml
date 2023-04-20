@@ -58,7 +58,7 @@ jobs:
           wget https://developers.yubico.com/yubihsm-shell/Releases/yubihsm-shell-2.4.0-ubuntu2204-amd64.tar.gz
           tar xf yubihsm-shell-2.4.0-ubuntu2204-amd64.tar.gz
           cd yubihsm-shell
-          sudo apt install *.deb
+          sudo dpkg -i *.deb
           cd
       - name: Prepare HSM and PKCS11 configuration files
         run: |
