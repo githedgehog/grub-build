@@ -47,6 +47,7 @@ jobs:
     steps:
       - name: Install sbsign tool
         run: |
+          sudo apt-get update
           sudo apt install -y sbsigntool
       - name: Install YubiHSM client and PKC11 dependencies
         run: |
