@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -55,11 +55,11 @@ jobs:
           sudo apt install -y libengine-pkcs11-openssl
 
           # install dependencies
-          sudo apt install -y libusb-1.0-0 libpcsclite1 libusb-1.0-0 libssl3
+          sudo apt install -y libusb-1.0-0 libpcsclite1 libusb-1.0-0 libssl
 
           # download the yubihsm-shell package, it is all we need, and install all debs
-          wget https://developers.yubico.com/yubihsm-shell/Releases/yubihsm-shell-2.4.0-ubuntu2204-amd64.tar.gz
-          tar xf yubihsm-shell-2.4.0-ubuntu2204-amd64.tar.gz
+          wget https://developers.yubico.com/yubihsm-shell/Releases/yubihsm-shell-2.4.0-ubuntu2004-amd64.tar.gz
+          tar xf yubihsm-shell-2.4.0-ubuntu2004-amd64.tar.gz
           cd yubihsm-shell
           sudo apt install -y ./libyubihsm-usb1_2.4.0_amd64.deb
           sudo apt install -y ./libyubihsm-http1_2.4.0_amd64.deb

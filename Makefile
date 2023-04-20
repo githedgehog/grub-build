@@ -18,6 +18,7 @@ build:
 		--progress=plain \
 		--build-arg EFIARCH=x64 \
 		--build-arg TARGETHOSTARCH=x86_64 \
+		--build-arg MKIMAGEARCH=x86_64 \
 		--platform=linux/amd64 $(DOCKER_BUILDX_FLAGS) . 2>&1 | tee build-x86_64.log
 	docker rm grub-build &>/dev/null | true
 	docker create --name grub-build ghcr.io/githedgehog/grub-build:latest
@@ -32,6 +33,7 @@ build-arm64:
 		--progress=plain \
 		--build-arg EFIARCH=aa64 \
 		--build-arg TARGETHOSTARCH=aarch64 \
+		--build-arg MKIMAGEARCH=arm64 \
 		--platform=linux/arm64 . 2>&1 | tee build-arm64.log
 	docker rm grub-build &>/dev/null | true
 	docker create --name grub-build ghcr.io/githedgehog/grub-build:latest
