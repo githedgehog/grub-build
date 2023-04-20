@@ -27,7 +27,6 @@ jobs:
             env.BUILDKIT_STEP_LOG_MAX_SPEED=-1
       - name: Run grub build (make ci)
         run: make ci
-      # TODO: add signing
       - name: Upload onie-grubx64.efi
         uses: actions/upload-artifact@v3
         with:
@@ -38,4 +37,87 @@ jobs:
         with:
           name: sonic-grubx64.efi
           path: artifacts/sonic-grubx64.efi
-      # TODO: add uploading of signed artifacts
+  signing:
+    needs: build
+    runs-on: [self-hosted, dind]
+    environment: hsm-test
+    env:
+      HSM_ACCESS_KEY: ${{ secrets.HSM_ACCESS_KEY }}
+      HSM_AUTH_KEY_SLOT: ${{ secrets.HSM_AUTH_KEY_SLOT }}
+    steps:
+      - name: Install sbsign tool
+        run: |
+          apt install -y sbsigntool
+      - name: Install YubiHSM client and PKC11 dependencies
+        run: |
+          # this is the PKCS11 engine module for OpenSSL
+          apt install -y libengine-pkcs11-openssl
+
+          # download the yubihsm-shell package, it is all we need, and install all debs
+          wget https://developers.yubico.com/yubihsm-shell/Releases/yubihsm-shell-2.4.0-ubuntu2204-amd64.tar.gz
+          tar xf yubihsm-shell-2.4.0-ubuntu2204-amd64.tar.gz
+          cd yubihsm-shell
+          apt install *.deb
+          cd
+      - name: Prepare HSM and PKCS11 configuration files
+        run: |
+          # writes the YubiHSM specific PKCS11 config file which will be used by the YubiHSM PKCS11 module
+          # if the YUBIHSM_PKCS11_CONF environment variable is set
+          cat > $PWD/yubihsm_pkcs11.conf <<EOF
+          connector = ${{ vars.HSM_CONNECTOR_URL }}
+          timeout = 5
+          EOF
+
+          # writes an OpenSSL configuration file. We will be using it by setting the OPENSSL_CONF environment
+          # variable which will always take priority if set.
+          cat > $PWD/openssl-pkcs11-engine.conf <<EOF
+          openssl_conf = openssl_init
+
+          [openssl_init]
+          engines = engine_section
+
+          [engine_section]
+          pkcs11 = pkcs11_section
+
+          [pkcs11_section]
+          engine_id = pkcs11
+          # not necessary, if it is, it is most likely at here
+          #dynamic_path = /usr/lib/x86_64-linux-gnu/engines-1.1/pkcs11.so
+          MODULE_PATH = /usr/lib/x86_64-linux-gnu/pkcs11/yubihsm_pkcs11.so
+          EOF
+      - name: Set up YUBIHSM_PKCS11_CONF env var
+        run: |
+          echo "YUBIHSM_PKCS11_CONF=$PWD/yubihsm_pkcs11.conf" >> $GITHUB_ENV
+      - name: Set up OPENSSL_CONF env var
+        run: |
+          echo "OPENSSL_CONF=$PWD/openssl-pkcs11-engine.conf" >> $GITHUB_ENV
+      - name: Prepare SB Signing cert
+        run: |
+          echo "${{ vars.SB_SIGNING_CERT }}" > sb-signing-cert.pem
+      - name: Prepare PKCS11 Key URI
+        run: |
+          eval PKCS11_KEY_URI="${PKCS11_KEY_URI}"
+          echo "::add-mask::$PKCS11_KEY_URI" 
+          echo "PKCS11_KEY_URI=$PKCS11_KEY_URI" >> $GITHUB_ENV
+      - name: Download onie-grubx64.efi from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: onie-grubx64.efi
+      - name: Download sonic-grubx64.efi from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: sonic-grubx64.efi
+      - name: Sign all EFI grub binaries
+        run: |
+          sbsign --engine pkcs11 --cert sb-signing-cert.pem --key $PKCS11_KEY_URI onie-grubx64.efi
+          sbsign --engine pkcs11 --cert sb-signing-cert.pem --key $PKCS11_KEY_URI sonic-grubx64.efi
+      - name: Upload onie-grubx64.efi.signed
+        uses: actions/upload-artifact@v3
+        with:
+          name: onie-grubx64.efi.signed
+          path: onie-grubx64.efi.signed
+      - name: Upload sonic-grubx64.efi
+        uses: actions/upload-artifact@v3
+        with:
+          name: sonic-grubx64.efi.signed
+          path: sonic-grubx64.efi.signed
