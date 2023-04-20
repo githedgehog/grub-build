@@ -42,7 +42,7 @@ jobs:
     runs-on: [self-hosted, dind]
     environment: hsm-test
     env:
-      HSM_ACCESS_KEY: ${{ secrets.HSM_ACCESS_KEY }}
+      HSM_AUTH_KEY: ${{ secrets.HSM_AUTH_KEY }}
       HSM_AUTH_KEY_SLOT: ${{ secrets.HSM_AUTH_KEY_SLOT }}
     steps:
       - name: Install sbsign tool
