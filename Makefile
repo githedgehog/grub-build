@@ -36,7 +36,7 @@ build-arm64:
 		--build-arg EFIARCH=aa64 \
 		--build-arg TARGETHOSTARCH=aarch64 \
 		--build-arg MKIMAGEARCH=arm64 \
-		--platform=linux/arm64 . 2>&1 | tee build-arm64.log
+		--platform=linux/arm64 $(DOCKER_BUILDX_FLAGS) . 2>&1 | tee build-arm64.log
 	docker rm grub-build &>/dev/null | true
 	docker create --name grub-build ghcr.io/githedgehog/grub-build:latest
 	docker cp grub-build:/artifacts/onie-grubaa64.efi $(MKFILE_DIR)/artifacts/
