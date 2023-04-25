@@ -2,6 +2,12 @@ name: ci
 
 on:
   workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: "Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)"
+        required: false
+        default: false
   pull_request:
   push:
     branches:
@@ -62,6 +68,12 @@ jobs:
         with:
           name: sonic-grubaa64.efi
           path: artifacts/sonic-grubaa64.efi
+      - name: Setup tmate session for debug
+        if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 30
+        with:
+          limit-access-to-actor: true
   signing:
     needs: [build, build-arm64]
     runs-on: [self-hosted, dind]
