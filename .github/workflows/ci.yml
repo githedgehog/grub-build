@@ -50,7 +50,7 @@ jobs:
         with:
           limit-access-to-actor: true
   build-arm64:
-    runs-on: [self-hosted, ARM64]
+    runs-on: [self-hosted, lab, he, simple]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
