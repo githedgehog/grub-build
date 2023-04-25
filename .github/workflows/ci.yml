@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    runs-on: [self-hosted, lab, he, simple]
+    runs-on: [self-hosted, ARM64]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
