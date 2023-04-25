@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, lab, he]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -43,6 +43,12 @@ jobs:
         with:
           name: sonic-grubx64.efi
           path: artifacts/sonic-grubx64.efi
+      - name: Setup tmate session for debug
+        if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 30
+        with:
+          limit-access-to-actor: true
   build-arm64:
     runs-on: [self-hosted, ARM64]
     steps:
@@ -76,7 +82,7 @@ jobs:
           limit-access-to-actor: true
   signing:
     needs: [build, build-arm64]
-    runs-on: [self-hosted, dind]
+    runs-on: [self-hosted, lab, he]
     environment: hsm-test
     env:
       HSM_AUTH_KEY: ${{ secrets.HSM_AUTH_KEY }}
@@ -191,3 +197,9 @@ jobs:
         with:
           name: sonic-grubaa64.efi.signed
           path: sonic-grubaa64.efi.signed
+      - name: Setup tmate session for debug
+        if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 30
+        with:
+          limit-access-to-actor: true
