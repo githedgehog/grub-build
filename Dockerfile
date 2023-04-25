@@ -6,7 +6,7 @@ ARG BUILDARCH
 ARG EFIARCH=x64
 ARG TARGETHOSTARCH=x86_64
 ARG MKIMAGEARCH=x86_64
-RUN echo "Building shim for \"${TARGETARCH}\" (\"${TARGETHOSTARCH}\") on \"${BUILDARCH}\" (EFIARCH: \"${EFIARCH}\")"
+RUN echo "Building grub for \"${TARGETARCH}\" (\"${TARGETHOSTARCH}\") on \"${BUILDARCH}\" (EFIARCH: \"${EFIARCH}\")"
 
 # basics for building debian packages
 # we are adding pedump for checking the resulting EFI images
