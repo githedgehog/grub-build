@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    runs-on: [self-hosted, lab, he]
+    runs-on: [self-hosted, lab, he, simple]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -82,7 +82,7 @@ jobs:
           limit-access-to-actor: true
   signing:
     needs: [build, build-arm64]
-    runs-on: [self-hosted, lab, he]
+    runs-on: [self-hosted, lab, he, simple]
     environment: hsm-test
     env:
       HSM_AUTH_KEY: ${{ secrets.HSM_AUTH_KEY }}
