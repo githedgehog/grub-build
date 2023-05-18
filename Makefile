@@ -4,6 +4,7 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 MKFILE_DIR := $(shell echo $(dir $(abspath $(lastword $(MAKEFILE_LIST)))) | sed 'sA/$$AA')
 DOCKER_BUILDX_FLAGS ?=
+GPG_PUBKEY ?= test
 
 all: build
 
@@ -24,10 +25,12 @@ build:
 		--build-arg EFIARCH=x64 \
 		--build-arg TARGETHOSTARCH=x86_64 \
 		--build-arg MKIMAGEARCH=x86_64 \
+		--build-arg GPG_PUBKEY=$(GPG_PUBKEY) \
 		--platform=linux/amd64 $(DOCKER_BUILDX_FLAGS) . 2>&1 | tee build-x86_64.log
 	docker rm grub-build &>/dev/null || true
 	docker create --name grub-build ghcr.io/githedgehog/grub-build:latest
 	docker cp grub-build:/artifacts/onie-grubx64.efi $(MKFILE_DIR)/artifacts/
+	docker cp grub-build:/artifacts/onie-recovery-grubx64.efi $(MKFILE_DIR)/artifacts/
 	docker cp grub-build:/artifacts/sonic-grubx64.efi $(MKFILE_DIR)/artifacts/
 	docker rm grub-build
 
@@ -40,10 +43,12 @@ build-arm64:
 		--build-arg EFIARCH=aa64 \
 		--build-arg TARGETHOSTARCH=aarch64 \
 		--build-arg MKIMAGEARCH=arm64 \
+		--build-arg GPG_PUBKEY=$(GPG_PUBKEY) \
 		--platform=linux/arm64 $(DOCKER_BUILDX_FLAGS) . 2>&1 | tee build-arm64.log
 	docker rm grub-build &>/dev/null || true
 	docker create --name grub-build ghcr.io/githedgehog/grub-build:latest
 	docker cp grub-build:/artifacts/onie-grubaa64.efi $(MKFILE_DIR)/artifacts/
+	docker cp grub-build:/artifacts/onie-recovery-grubaa64.efi $(MKFILE_DIR)/artifacts/
 	docker cp grub-build:/artifacts/sonic-grubaa64.efi $(MKFILE_DIR)/artifacts/
 	docker rm grub-build
 

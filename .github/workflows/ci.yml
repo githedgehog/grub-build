@@ -3,6 +3,14 @@ name: ci
 on:
   workflow_dispatch:
     inputs:
+      environment:
+        description: 'Select the GPG pubkey and the HSM keys to use'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - test
+          - prod
       debug_enabled:
         type: boolean
         description: "Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)"
@@ -19,7 +27,9 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    runs-on: [self-hosted, lab, he, simple]
+    runs-on: [self-hosted, lab, he, simple, X64]
+    env:
+      GPG_PUBKEY: ${{ github.event.inputs.environment || 'test' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -38,6 +48,11 @@ jobs:
         with:
           name: onie-grubx64.efi
           path: artifacts/onie-grubx64.efi
+      - name: Upload onie-recovery-grubx64.efi
+        uses: actions/upload-artifact@v3
+        with:
+          name: onie-recovery-grubx64.efi
+          path: artifacts/onie-recovery-grubx64.efi
       - name: Upload sonic-grubx64.efi
         uses: actions/upload-artifact@v3
         with:
@@ -50,7 +65,9 @@ jobs:
         with:
           limit-access-to-actor: true
   build-arm64:
-    runs-on: [self-hosted, ARM64]
+    runs-on: [self-hosted, simple, ARM64]
+    env:
+      GPG_PUBKEY: ${{ github.event.inputs.environment || 'test' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -69,6 +86,11 @@ jobs:
         with:
           name: onie-grubaa64.efi
           path: artifacts/onie-grubaa64.efi
+      - name: Upload onie-recovery-grubaa64.efi
+        uses: actions/upload-artifact@v3
+        with:
+          name: onie-recovery-grubaa64.efi
+          path: artifacts/onie-recovery-grubaa64.efi
       - name: Upload sonic-grubaa64.efi
         uses: actions/upload-artifact@v3
         with:
@@ -83,7 +105,7 @@ jobs:
   signing:
     needs: [build, build-arm64]
     runs-on: [self-hosted, lab, he, simple]
-    environment: hsm-test
+    environment: ${{ github.event.inputs.environment || 'test' }}
     env:
       HSM_AUTH_KEY: ${{ secrets.HSM_AUTH_KEY }}
       HSM_AUTH_KEY_SLOT: ${{ secrets.HSM_AUTH_KEY_SLOT }}
@@ -174,8 +196,10 @@ jobs:
       - name: Sign all EFI grub binaries
         run: |
           sbsign --engine pkcs11 --cert sb-signing-cert.pem --key $PKCS11_KEY_URI onie-grubx64.efi
+          sbsign --engine pkcs11 --cert sb-signing-cert.pem --key $PKCS11_KEY_URI onie-recovery-grubx64.efi
           sbsign --engine pkcs11 --cert sb-signing-cert.pem --key $PKCS11_KEY_URI sonic-grubx64.efi
           sbsign --engine pkcs11 --cert sb-signing-cert.pem --key $PKCS11_KEY_URI onie-grubaa64.efi
+          sbsign --engine pkcs11 --cert sb-signing-cert.pem --key $PKCS11_KEY_URI onie-recovery-grubaa64.efi
           sbsign --engine pkcs11 --cert sb-signing-cert.pem --key $PKCS11_KEY_URI sonic-grubaa64.efi
       - name: Upload onie-grubx64.efi.signed
         uses: actions/upload-artifact@v3

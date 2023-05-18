@@ -24,10 +24,12 @@ We are stil planning to add two patches before we sign a production build:
 
 All builds are done in Github action workflows.
 They are leveraging the build runners in our lab.
-All builds are using the `hsm-test` environment for signing.
-This means that by default all builds are using our "test" certificate for signing the images.
+All builds are using the `test` environment for signing.
+This means that by default all builds are using our "TEST" certificate for signing the images.
 The key and certificate are located on the HSMs in our lab.
 
 If you want to produce a production build, you need to tag the commit.
-This will trigger the use of the `hsm-prod` environment for signing (TODO: planned, not happening just yet).
+And then you need to trigger a manual build and select the `prod` environment for signing.
+There is no other way to create a production build.
+This is done like this by design.
 This will use the key and certificate which is embedded in our production shim which is signed by Microsoft.
