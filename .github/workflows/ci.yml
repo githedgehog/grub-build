@@ -181,6 +181,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: onie-grubx64.efi
+      - name: Download onie-recovery-grubx64.efi from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: onie-recovery-grubx64.efi
       - name: Download sonic-grubx64.efi from build job
         uses: actions/download-artifact@v3
         with:
@@ -189,6 +193,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: onie-grubaa64.efi
+      - name: Download onie-recovery-grubaa64.efi from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: onie-recovery-grubaa64.efi
       - name: Download sonic-grubaa64.efi from build job
         uses: actions/download-artifact@v3
         with:
@@ -206,6 +214,11 @@ jobs:
         with:
           name: onie-grubx64.efi.signed
           path: onie-grubx64.efi.signed
+      - name: Upload onie-recovery-grubx64.efi.signed
+        uses: actions/upload-artifact@v3
+        with:
+          name: onie-recovery-grubx64.efi.signed
+          path: onie-recovery-grubx64.efi.signed
       - name: Upload sonic-grubx64.efi.signed
         uses: actions/upload-artifact@v3
         with:
@@ -216,6 +229,11 @@ jobs:
         with:
           name: onie-grubaa64.efi.signed
           path: onie-grubaa64.efi.signed
+      - name: Upload onie-recovery-grubaa64.efi.signed
+        uses: actions/upload-artifact@v3
+        with:
+          name: onie-recovery-grubaa64.efi.signed
+          path: onie-recovery-grubaa64.efi.signed
       - name: Upload sonic-grubaa64.efi.signed
         uses: actions/upload-artifact@v3
         with:
