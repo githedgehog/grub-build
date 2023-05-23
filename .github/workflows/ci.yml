@@ -68,7 +68,6 @@ jobs:
     runs-on: [self-hosted, simple, ARM64]
     env:
       GPG_PUBKEY: ${{ github.event.inputs.environment || 'test' }}
-      ORAS_ARTIFACT_TAG: ${{ github.event.inputs.environment || 'test' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -110,6 +109,7 @@ jobs:
     env:
       HSM_AUTH_KEY: ${{ secrets.HSM_AUTH_KEY }}
       HSM_AUTH_KEY_SLOT: ${{ secrets.HSM_AUTH_KEY_SLOT }}
+      ORAS_ARTIFACT_TAG: ${{ github.event.inputs.environment || 'test' }}
     steps:
       - name: Install sbsign tool
         run: |
