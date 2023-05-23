@@ -249,6 +249,9 @@ jobs:
           tar -zxf oras_${ORAS_VERSION}_*.tar.gz -C oras-install/
           sudo mv oras-install/oras /usr/local/bin/
           rm -rf oras_${ORAS_VERSION}_*.tar.gz oras-install/
+      - name: oras login
+        run: |
+          oras login --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }}
       - name: Push oras artifacts
         if: ${{ github.ref_type == 'branch' && github.ref_name == 'main' }}
         run: |
