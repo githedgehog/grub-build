@@ -68,6 +68,7 @@ jobs:
     runs-on: [self-hosted, simple, ARM64]
     env:
       GPG_PUBKEY: ${{ github.event.inputs.environment || 'test' }}
+      ORAS_ARTIFACT_TAG: ${{ github.event.inputs.environment || 'test' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -239,6 +240,32 @@ jobs:
         with:
           name: sonic-grubaa64.efi.signed
           path: sonic-grubaa64.efi.signed
+      - name: Install oras
+        if: ${{ github.ref_type == 'branch' && github.ref_name == 'main' }}
+        run: |
+          curl -LO "https://github.com/oras-project/oras/releases/download/v${ORAS_VERSION}/oras_${ORAS_VERSION}_linux_amd64.tar.gz"
+          mkdir -p oras-install/
+          tar -zxf oras_${ORAS_VERSION}_*.tar.gz -C oras-install/
+          sudo mv oras-install/oras /usr/local/bin/
+          rm -rf oras_${ORAS_VERSION}_*.tar.gz oras-install/
+      - name: Push oras artifacts
+        if: ${{ github.ref_type == 'branch' && github.ref_name == 'main' }}
+        run: |
+          mkdir oras_artifact
+          cp -v onie-grubx64.efi.signed oras_artifact/onie-grubx64.efi
+          cp -v onie-recovery-grubx64.efi.signed oras_artifact/onie-recovery-grubx64.efi
+          cp -v sonic-grubx64.efi.signed oras_artifact/sonic-grubx64.efi
+          cp -v onie-grubaa64.efi.signed oras_artifact/onie-grubaa64.efi
+          cp -v onie-recovery-grubaa64.efi.signed oras_artifact/onie-recovery-grubaa64.efi
+          cp -v sonic-grubaa64.efi.signed oras_artifact/sonic-grubaa64.efi
+          cd oras_artifact
+          oras push ghcr.io/githedgehog/grub-build:${ORAS_ARTIFACT_TAG} \
+            onie-grubx64.efi \
+            onie-recovery-grubx64.efi \
+            sonic-grubx64.efi \
+            onie-grubaa64.efi \
+            onie-recovery-grubaa64.efi \
+            sonic-grubaa64.efi
       - name: Setup tmate session for debug
         if: ${{ failure() && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
         uses: mxschmitt/action-tmate@v3
