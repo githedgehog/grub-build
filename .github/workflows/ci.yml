@@ -112,6 +112,9 @@ jobs:
       ORAS_VERSION: "1.0.0"
       ORAS_ARTIFACT_TAG: ${{ github.event.inputs.environment || 'test' }}
     steps:
+      - name: Ensure python is installed
+        run: |
+          sudo apt-get install -y python3
       - name: Install sbsign tool
         run: |
           sudo apt-get update
@@ -176,7 +179,7 @@ jobs:
           echo "${{ vars.SB_SIGNING_CERT }}" > sb-signing-cert.pem
       - name: Prepare PKCS11 Key URI
         run: |
-          PKCS11_KEY_URI=$( python -c 'import os; print(os.path.expandvars("${{ vars.PKCS11_KEY_URI }}"))' )
+          PKCS11_KEY_URI=$( python3 -c 'import os; print(os.path.expandvars("${{ vars.PKCS11_KEY_URI }}"))' )
           echo "::add-mask::$PKCS11_KEY_URI" 
           echo "PKCS11_KEY_URI=$PKCS11_KEY_URI" >> $GITHUB_ENV
       - name: Download onie-grubx64.efi from build job
