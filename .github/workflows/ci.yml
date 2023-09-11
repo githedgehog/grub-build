@@ -104,7 +104,7 @@ jobs:
           limit-access-to-actor: true
   signing:
     needs: [build, build-arm64]
-    runs-on: [self-hosted, lab, he, simple]
+    runs-on: [self-hosted, lab, he, simple, jammy]
     environment: ${{ github.event.inputs.environment || 'test' }}
     env:
       HSM_AUTH_KEY: ${{ secrets.HSM_AUTH_KEY }}
