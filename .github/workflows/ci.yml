@@ -32,7 +32,7 @@ jobs:
       GPG_PUBKEY: ${{ github.event.inputs.environment || 'test' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up QEMU for Docker Buildkit
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -70,7 +70,7 @@ jobs:
       GPG_PUBKEY: ${{ github.event.inputs.environment || 'test' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up QEMU for Docker Buildkit
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
